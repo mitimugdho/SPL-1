@@ -1,17 +1,11 @@
-#ifndef UTILS_H
-#define UTILS_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "gregorian.h"
+#include "bengali.h"
+#include "convert.h"
+#include "events.h"
+#include "calendar_display.h"
+#include "jdn.h"
 
-typedef struct {
-    int day;
-    int month;
-    int year;
-} Date;
-
-typedef struct {
-    Date date;
-    char title[50];
-    char description[100];
-} Event;
-
-
-#endif
+#define EVENTS_FILE "calendar_events.dat"

@@ -5,7 +5,7 @@
 #include "bengali.h"
 #include "convert.h"
 #include "events.h"
-#include "calendar_display.h"
+//#include "ui.h"
 #include "jdn.h"
 
 #define EVENTS_FILE "calendar_events.dat"

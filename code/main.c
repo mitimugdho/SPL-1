@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "gregorian.h"
 #include "bengali.h"
 #include "convert.h"
 #include "events.h"
-//#include "ui.h"
 #include "jdn.h"
+//#include <stdlib.h>
+//#include <string.h>
+//#include "ui.h"
 
 #define EVENTS_FILE "calendar_events.dat"

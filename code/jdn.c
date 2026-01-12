@@ -1,13 +1,5 @@
 #include "jdn.h"
 
-long gregorian_to_jdn(int day, int month, int year) {
-    
-    int a = (14 - month) / 12;
-    int y = year + 4800 - a;
-    int m = month + 12 * a - 3;
-    return day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
-}
-
 long gregorian_to_jdn(GregorianDate date) {
     int a = (14 - date.month) / 12;
     int y = date.year + 4800 - a;

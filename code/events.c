@@ -105,7 +105,7 @@ void view_today_events() {
         if (events[i].is_active) {
             long event_jdn = gregorian_to_jdn(events[i].g_date);
             if (event_jdn == today_jdn) {
-                printf("\n>>> %s\n", events[i].description);
+                printf("\n***%s***\n", events[i].description);
                 found++;
             }
         }
@@ -114,7 +114,7 @@ void view_today_events() {
     if (found == 0) {
         printf("\nNo reminders for today.\n");
     }
-    printf("\n");
+    printf("\n")
 }
 
 int save_events_to_file(const char* filename) {

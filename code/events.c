@@ -114,7 +114,7 @@ void view_today_events() {
     if (found == 0) {
         printf("\nNo reminders for today.\n");
     }
-    printf("========================\n");
+    printf("\n");
 }
 
 int save_events_to_file(const char* filename) {

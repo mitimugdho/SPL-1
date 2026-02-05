@@ -7,6 +7,8 @@
 #include <stdio.h>
 
 #define BLUE  "\033[1;34m"
+#define RED   "\033[31m"
+#define GREEN "\033[32m"
 #define RESET "\033[0m"
 
 void display_monthly_calendar(int month, int year) {

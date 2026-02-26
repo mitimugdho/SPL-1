@@ -26,7 +26,8 @@ int add_event(GregorianDate g_date, BengaliDate b_date, const char* description)
     strncpy(events[event_count].description, description, MAX_EVENT_TEXT - 1);
     events[event_count].description[MAX_EVENT_TEXT - 1] = '\0';
     events[event_count].is_active = 1;
-    
+    events[event_count].is_done = 0;   
+
     event_count++;
     return 1;
 }
@@ -77,7 +78,8 @@ void view_all_events() {
                 print_gregorian_date(events[i].g_date);
                 printf(" (");
                 print_bengali_date(events[i].b_date);
-                printf(")\n   %s\n", events[i].description);
+                printf(")\n   %s [%s]\n", events[i].description,
+                       events[i].is_done ? "DONE" : "PENDING");  
                 found++;
             }
         }
@@ -148,14 +150,29 @@ int load_events_from_file(const char* filename) {
         GregorianDate g_date;
         BengaliDate b_date;
         char description[MAX_EVENT_TEXT];
-        
-        if (fscanf(file, "%d %d %d %d %d %d ",
-                   &g_date.day, &g_date.month, &g_date.year,
-                   &b_date.day, &b_date.month, &b_date.year) == 6) {
-            fgets(description, MAX_EVENT_TEXT, file); // Remove newline
-            description[strcspn(description, "\n")] = 0;
-            
+        int is_done = 0;
+
+       if (fscanf(file, "%d %d %d %d %d %d ",
+            &g_date.day, &g_date.month, &g_date.year,
+            &b_date.day, &b_date.month, &b_date.year) == 6) {
+            char rest[MAX_EVENT_TEXT];
+            fgets(rest, MAX_EVENT_TEXT, file);
+            rest[strcspn(rest, "\n")] = 0;
+            int done_flag = 0;
+            char desc_part[MAX_EVENT_TEXT];
+            if (sscanf(rest, "%d %[^\n]", &done_flag, desc_part) == 2) {
+                is_done = done_flag;
+                strncpy(description, desc_part, MAX_EVENT_TEXT - 1);
+                description[MAX_EVENT_TEXT - 1] = '\0';
+            } else {
+                is_done = 0;
+                strncpy(description, rest, MAX_EVENT_TEXT - 1);
+                description[MAX_EVENT_TEXT - 1] = '\0';
+            }
+
             add_event(g_date, b_date, description);
+            events[event_count - 1].is_done = is_done;
+
         }
     }
     
@@ -173,4 +190,28 @@ GregorianDate get_today_date() {
     today.year = tm_info->tm_year + 1900;
     
     return today;
+}
+void mark_event_done(int event_index) {
+    if (event_index < 0 || event_index >= event_count || !events[event_index].is_active) {
+        printf("Error: Invalid event number.\n");
+        return;
+    }
+    events[event_index].is_done = 1;
+    printf("\nEvent marked as DONE: %s\n", events[event_index].description);
+    save_events_to_file("calendar_events.txt");
+}
+void reschedule_event(int event_index, GregorianDate new_date) {
+    if (event_index < 0 || event_index >= event_count || !events[event_index].is_active) {
+        printf("Error: Invalid event number.\n");
+        return;
+    }
+    events[event_index].g_date = new_date;
+    events[event_index].b_date = gregorian_to_bengali(new_date);
+    events[event_index].is_done = 0;  // reset to pending on reschedule
+    printf("\nEvent rescheduled: %s\nNew date: ", events[event_index].description);
+    print_gregorian_date(new_date);
+    printf(" (");
+    print_bengali_date(events[event_index].b_date);
+    printf(")\n");
+    save_events_to_file("calendar_events.txt");
 }

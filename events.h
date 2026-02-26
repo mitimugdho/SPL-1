@@ -12,6 +12,7 @@ typedef struct {
     BengaliDate b_date;
     char description[MAX_EVENT_TEXT];
     int is_active;
+    int is_done;
 } Event;
 
 extern Event events[MAX_EVENTS];
@@ -24,6 +25,8 @@ void view_all_events();
 void view_today_events();
 int save_events_to_file(const char* filename);
 int load_events_from_file(const char* filename);
+void reschedule_event(int event_index, GregorianDate new_date);
+void mark_event_done(int event_index);
 GregorianDate get_today_date();
 
 #endif

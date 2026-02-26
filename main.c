@@ -7,7 +7,7 @@
 #include "jdn.h"
 #include<string.h>
 
-#define EVENTS_FILE "calendar_events.dat"
+#define EVENTS_FILE "calendar_events.txt" //"calendar_events.dat"
 
 void print_menu() {
     printf("                        MAIN MENU                              \n");
@@ -18,7 +18,9 @@ void print_menu() {
     printf("  5. View All Upcoming Events\n");
     printf("  6. View Today's Reminders\n");
     printf("  7. Display Monthly Calendar (Dual)\n");
-    printf("  8. Exit \n");
+    printf("  8. Mark Event as Done\n");      
+    printf("  9. Reschedule Event\n");        
+    printf("  10. Exit \n");
     printf("Enter your choice: ");
 }
 
@@ -110,6 +112,42 @@ void handle_add_event() {
         save_events_to_file(EVENTS_FILE);
     }
 }
+void handle_mark_done() {
+    if (event_count == 0) {
+        printf("\nNo events to update.\n");
+        return;
+    }
+    view_all_events();
+    printf("\nEnter event number to mark as done: ");
+    int num;
+    scanf("%d", &num);
+    mark_event_done(num - 1);
+}
+void handle_reschedule() {
+    if (event_count == 0) {
+        printf("\nNo events to reschedule.\n");
+        return;
+    }
+    view_all_events();
+    printf("\nEnter event number to reschedule: ");
+    int num;
+    scanf("%d", &num);
+    GregorianDate new_date;
+    printf("Enter new date:\n");
+    printf("Day: ");
+    scanf("%d", &new_date.day);
+    printf("Month (1-12): ");
+    scanf("%d", &new_date.month);
+    printf("Year: ");
+    scanf("%d", &new_date.year);
+
+    if (!is_valid_gregorian_date(new_date)) {
+        printf("Invalid date!\n");
+        return;
+    }
+    reschedule_event(num - 1, new_date);
+}
+
 void handle_monthly_calendar() {
     int month, year;
     printf("\n   Display Monthly Calendar\n");
@@ -143,6 +181,12 @@ void handle_view_events_by_date() {
 }
 int main() {
     int choice;
+    init_events();  // initialize the array
+
+    // Load previously saved events from file
+    if (load_events_from_file(EVENTS_FILE)) {
+        printf("Events loaded from file.\n");
+    }
     handle_current_calender();
     while (1) {
         print_menu();
@@ -169,11 +213,14 @@ int main() {
             case 7: 
                 handle_monthly_calendar();
                 break;
-            case 8:
+            case 8: handle_mark_done(); break;      
+            case 9: handle_reschedule(); break;      
+            case 10:
                 save_events_to_file(EVENTS_FILE);
                 printf("\n Events saved. Goodbye!\n\n");
                 return 0;
-            
+            default:
+               printf("Invalid choice! Please enter 1-10.\n");
         }
     }    
     return 0;

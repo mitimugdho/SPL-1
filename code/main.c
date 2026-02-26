@@ -7,7 +7,7 @@
 #include "jdn.h"
 #include<string.h>
 
-#define EVENTS_FILE "calendar_events.dat"
+#define EVENTS_FILE "calendar_events.txt" //"calendar_events.dat"
 
 void print_menu() {
     printf("                        MAIN MENU                              \n");

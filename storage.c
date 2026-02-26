@@ -26,13 +26,14 @@ int storage_save_events(const char* filename) {
     int saved_count = 0;
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active) {
-            fprintf(file, "%d %d %d %d %d %d %s\n",
+            fprintf(file, "%d %d %d %d %d %d %d %s\n",
                     events[i].g_date.day, 
                     events[i].g_date.month, 
                     events[i].g_date.year,
                     events[i].b_date.day, 
                     events[i].b_date.month, 
                     events[i].b_date.year,
+                    events[i].is_done,
                     events[i].description);
             saved_count++;
         }
@@ -41,7 +42,7 @@ int storage_save_events(const char* filename) {
     printf(" Successfully saved %d events to '%s'\n", saved_count, filename);
     return STORAGE_SUCCESS;
 }
-
+/*
 int storage_load_events(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -86,8 +87,15 @@ int storage_load_events(const char* filename) {
     return STORAGE_SUCCESS;
 }
 
-
-
+*/
+int storage_add_event(GregorianDate g_date, BengaliDate b_date, const char* description) {
+    if (add_event(g_date, b_date, description)) {
+        storage_save_events(EVENTS_STORAGE_FILE);
+        return STORAGE_SUCCESS;
+    }
+    return STORAGE_ERROR_WRITE_FAILED;
+}
+/*
 int storage_add_event(GregorianDate g_date, BengaliDate b_date, const char* description) {
     fprintf(stderr, "Error: Invalid event data!\n");
     return STORAGE_ERROR_INVALID_DATA;
@@ -99,7 +107,7 @@ int storage_add_event(GregorianDate g_date, BengaliDate b_date, const char* desc
     
     return STORAGE_ERROR_WRITE_FAILED;
 }
-
+*/
 int storage_delete_event(int event_index) {
     if (event_index < 0 || event_index >= event_count) {
         fprintf(stderr, "Error: Invalid event index!\n");

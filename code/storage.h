@@ -5,9 +5,9 @@
 #include "bengali.h"
 #include "events.h"
 
-#define EVENTS_STORAGE_FILE "calendar_events.dat"
-#define CONFIG_STORAGE_FILE "calendar_configuration.dat"
-#define BACKUP_STORAGE_FILE "calendar_backup.dat"
+#define EVENTS_STORAGE_FILE "calendar_events.txt"//"calendar_events.dat"
+#define CONFIG_STORAGE_FILE "calendar_configuration.txt" //"calendar_configuration.dat"
+#define BACKUP_STORAGE_FILE "calendar_backup.txt"//"calendar_backup.dat"
 
 #define STORAGE_SUCCESS 0
 #define STORAGE_ERROR_FILE_NOT_FOUND 1

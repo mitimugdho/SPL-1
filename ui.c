@@ -6,10 +6,11 @@
 #include "jdn.h"
 #include <stdio.h>
 
-#define BLUE  "\033[1;34m"
-#define RED   "\033[31m"
-#define GREEN "\033[32m"
-#define RESET "\033[0m"
+#define BLUE    "\033[1;34m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define RESET   "\033[0m"
+#define YELLOW  "\033[1;33m"
 
 void display_monthly_calendar(int month, int year) {
     GregorianDate today = get_today_date();
@@ -20,19 +21,8 @@ void display_monthly_calendar(int month, int year) {
     
     BengaliDate bengali_date = gregorian_to_bengali(first_day);
     printf("\n");
-    printf("             %s %d  %s-%s %d             \n", //etay bangla mash lekha lagbe
+    printf("             "YELLOW"%s %d  %s-%s %d"RESET"             \n",
            get_gregorian_month_name(month), year,get_bengali_month_name(bengali_date.month),get_bengali_month_name(bengali_date.month+1),bengali_date.year);
-    /*int name_len = 0; 
-    const char* month_name = get_gregorian_month_name(month);
-    while (month_name[name_len] != '\0') name_len++;
-    
-    int year_len = (year >= 1000) ? 4 : (year >= 100) ? 3 : (year >= 10) ? 2 : 1;
-    int total_len = name_len + year_len + 1; 
-    int spaces_needed = 13 - total_len;
-    
-    for (int i = 0; i < spaces_needed; i++) printf(" "); */
-
-    
     int start_dow = get_day_of_week(first_day);
     int days_in_month = get_gregorian_days_in_month(month, year);
     int day = 1;

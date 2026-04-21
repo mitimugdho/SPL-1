@@ -8,12 +8,15 @@
 #include<string.h>
 
 #define EVENTS_FILE "calendar_events.txt" //"calendar_events.dat"
+#define CYAN    "\033[1;36m"
+#define GREEN   "\033[0;32m"
+#define RESET   "\033[0m"
 
 void print_menu() {
-    printf("                        MAIN MENU                              \n");
+    printf("                        "CYAN"MAIN MENU"RESET"                              \n");
     printf("  1. English to Bengali Date Conversion (E→B)\n");
     printf("  2. Bengali to English Date Conversion (B→E)\n");
-    printf("  3. Add Event/Reminder\n");
+    printf("  3. Add Event/Task\n");
     printf("  4. View Events for a Specific Date\n");
     printf("  5. View All Upcoming Events\n");
     printf("  6. View Today's Reminders\n");
@@ -32,7 +35,7 @@ void handle_current_calender(){
 }
 void handle_gregorian_to_bengali() {
     GregorianDate g_date;
-    printf("\n---English to Bengali Conversion---\n");
+    printf("\n"GREEN"---English to Bengali Conversion---"RESET"\n");
     printf("Enter day: ");
     scanf("%d", &g_date.day);
     printf("Enter month (1-12): ");
@@ -46,7 +49,7 @@ void handle_gregorian_to_bengali() {
     }
     
     BengaliDate b_date = gregorian_to_bengali(g_date);
-    printf("              ENGLISH TO BENGALI CONVERSION                \n");
+    printf("              "GREEN"ENGLISH TO BENGALI CONVERSION"RESET"               \n");
     printf("English Date: ");
     print_gregorian_date(g_date);
     printf("\nBengali Date: ");
@@ -55,7 +58,7 @@ void handle_gregorian_to_bengali() {
 }
 void handle_bengali_to_gregorian() {
     BengaliDate b_date;
-    printf("\n--- Bengali to English Conversion ---\n");
+    printf("\n"GREEN"--- Bengali to English Conversion ---"RESET"\n");
     printf("Enter day: ");
     scanf("%d", &b_date.day);
     printf("Enter month (1-12): ");
@@ -69,7 +72,7 @@ void handle_bengali_to_gregorian() {
     }
     
     GregorianDate g_date = bengali_to_gregorian(b_date);
-    printf("               BENGALI TO ENGLISH CONVERSION                 \n");
+    printf("               "GREEN"BENGALI TO ENGLISH CONVERSION"RESET"                 \n");
     printf("Bengali Date: ");
     print_bengali_date(b_date);
     printf("\nEnglish Date: ");
@@ -80,7 +83,7 @@ void handle_add_event() {
     GregorianDate g_date;
     char description[MAX_EVENT_TEXT];
     
-    printf("\n--- Add Event/Reminder ---\n");
+    printf("\n"GREEN"--- Add Event/Reminder ---"RESET"\n");
     printf("Enter date for event:\n");
     printf("Day: ");
     scanf("%d", &g_date.day);
@@ -112,6 +115,23 @@ void handle_add_event() {
         save_events_to_file(EVENTS_FILE);
     }
 }
+void handle_view_events_by_date() {
+    GregorianDate g_date;
+    printf("\n"GREEN"--- View Events for Specific Date ---"RESET"\n");
+    printf("Enter day: ");
+    scanf("%d", &g_date.day);
+    printf("Enter month (1-12): ");
+    scanf("%d", &g_date.month);
+    printf("Enter year: ");
+    scanf("%d", &g_date.year);
+    
+    if (!is_valid_gregorian_date(g_date)) {
+        printf("Invalid date!\n");
+        return;
+    }
+    
+    view_events_by_date(g_date);
+}
 void handle_mark_done() {
     if (event_count == 0) {
         printf("\nNo events to update.\n");
@@ -128,10 +148,25 @@ void handle_reschedule() {
         printf("\nNo events to reschedule.\n");
         return;
     }
-    view_all_events();
+    view_pending_events();
     printf("\nEnter event number to reschedule: ");
     int num;
     scanf("%d", &num);
+    int real_index = -1;
+    int found = 0;
+    for (int i = 0; i < event_count; i++) {
+        if (events[i].is_active && !events[i].is_done) {
+            found++;
+            if (found == num) {
+                real_index = i;
+                break;
+            }
+        }
+    }
+    if (real_index == -1) {
+        printf("Invalid event number.\n");
+        return;
+    }
     GregorianDate new_date;
     printf("Enter new date:\n");
     printf("Day: ");
@@ -145,7 +180,7 @@ void handle_reschedule() {
         printf("Invalid date!\n");
         return;
     }
-    reschedule_event(num - 1, new_date);
+    reschedule_event(real_index, new_date);
 }
 
 void handle_monthly_calendar() {
@@ -161,23 +196,6 @@ void handle_monthly_calendar() {
         return;
     }
     display_monthly_calendar(month,year);
-}
-void handle_view_events_by_date() {
-    GregorianDate g_date;
-    printf("\n--- View Events for Specific Date ---\n");
-    printf("Enter day: ");
-    scanf("%d", &g_date.day);
-    printf("Enter month (1-12): ");
-    scanf("%d", &g_date.month);
-    printf("Enter year: ");
-    scanf("%d", &g_date.year);
-    
-    if (!is_valid_gregorian_date(g_date)) {
-        printf("Invalid date!\n");
-        return;
-    }
-    
-    view_events_by_date(g_date);
 }
 int main() {
     int choice;

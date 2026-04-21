@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
+#define GREEN   "\033[0;32m"
+#define RESET   "\033[0m"
 Event events[MAX_EVENTS];
 int event_count = 0;
 
@@ -14,7 +15,6 @@ void init_events() {
         events[i].is_active = 0;
     }
 }
-
 int add_event(GregorianDate g_date, BengaliDate b_date, const char* description) {
     if (event_count >= MAX_EVENTS) {
         printf("Error: Maximum event limit reached!\n");
@@ -36,12 +36,12 @@ void view_events_by_date(GregorianDate g_date) {
     int found = 0;
     long target_jdn = gregorian_to_jdn(g_date);
     
-    printf("\n*** Events for ");
+    printf("\n"GREEN"*** Events for"RESET" ");
     print_gregorian_date(g_date);
     BengaliDate b_date = gregorian_to_bengali(g_date);
     printf(" (");
     print_bengali_date(b_date);
-    printf(") ***\n");
+    printf(") "GREEN"***"RESET"\n");
     
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active) {
@@ -57,7 +57,6 @@ void view_events_by_date(GregorianDate g_date) {
         printf("No events found for this date.\n");
     }
 }
-
 void view_all_events() {
     if (event_count == 0) {
         printf("\nNo events stored.\n");
@@ -67,7 +66,7 @@ void view_all_events() {
     GregorianDate today = get_today_date();
     long today_jdn = gregorian_to_jdn(today);
     
-    printf("\n*** All Upcoming Events ***\n");
+    printf("\n"GREEN"*** All Upcoming Events ***"RESET"\n");
     int found = 0;
     
     for (int i = 0; i < event_count; i++) {
@@ -88,12 +87,41 @@ void view_all_events() {
         printf("No upcoming events.\n");
     }
 }
+void view_pending_events() {
+    if (event_count == 0) {
+        printf("\nNo events stored.\n");
+        return;
+    }
+
+    GregorianDate today = get_today_date();
+    long today_jdn = gregorian_to_jdn(today);
+
+    printf("\n"GREEN"*** Pending Events (Overdue + Upcoming) ***"RESET"s\n");
+    int found = 0;
+
+    for (int i = 0; i < event_count; i++) {
+        if (events[i].is_active && !events[i].is_done) {
+            printf("\n%d. ", found + 1);
+            print_gregorian_date(events[i].g_date);
+            printf(" (");
+            print_bengali_date(events[i].b_date);
+            long event_jdn = gregorian_to_jdn(events[i].g_date);
+            printf(")\n   %s [%s]\n", events[i].description,
+                   event_jdn < today_jdn ? "OVERDUE" : "PENDING");
+            found++;
+        }
+    }
+
+    if (found == 0) {
+        printf("No pending events.\n");
+    }
+}
 
 void view_today_events() {
     GregorianDate today = get_today_date();
     long today_jdn = gregorian_to_jdn(today);
     
-    printf("\n=== TODAY'S REMINDERS ===\n");
+    printf("\n"GREEN"=== TODAY'S REMINDERS ==="RESET"\n");
     printf("Date: ");
     print_gregorian_date(today);
     BengaliDate b_today = gregorian_to_bengali(today);
@@ -116,7 +144,6 @@ void view_today_events() {
         printf("\nNo reminders for today.\n");
     }
 }
-
 int save_events_to_file(const char* filename) {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
@@ -179,7 +206,6 @@ int load_events_from_file(const char* filename) {
     fclose(file);
     return 1;
 }
-
 GregorianDate get_today_date() {
     GregorianDate today;
     time_t t = time(NULL);

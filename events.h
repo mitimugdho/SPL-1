@@ -22,6 +22,7 @@ void init_events();
 int add_event(GregorianDate g_date, BengaliDate b_date, const char* description);
 void view_events_by_date(GregorianDate g_date);
 void view_all_events();
+void view_pending_events();
 void view_today_events();
 int save_events_to_file(const char* filename);
 int load_events_from_file(const char* filename);

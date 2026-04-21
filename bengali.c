@@ -68,8 +68,11 @@ void print_bengali_date(BengaliDate date) {
     printf("%s %s, %d ", get_bengali_day_number(date.day), BENGALI_MONTHS[date.month], date.year);
 }
 const char* get_bengali_month_name(int month) {
-    if (month < 1 || month > 12)
+    if (month < 1)
         return "Invalid";
+    else if(month >12){
+        month=month%12;
+    }
     return BENGALI_MONTHS[month];
 }
 

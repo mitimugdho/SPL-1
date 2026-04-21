@@ -54,10 +54,8 @@ BengaliDate gregorian_to_bengali(GregorianDate g_date) {
             b_date.year = b_year;
             break;
         }
-        
         days_counted += days_in_month;
     }
-    
     return b_date;
 }
 GregorianDate bengali_to_gregorian(BengaliDate b_date) {

@@ -1,7 +1,7 @@
 CC      = gcc
 CFLAGS  = -Wall -Wextra -std=c11 -g
 TARGET  = calendar
-SRCS    = main.c gregorian.c bengali.c convert.c jdn.c events.c storage.c ui.c
+SRCS    = main.c gregorian.c bengali.c convert.c jdn.c events.c storage.c ui.c journal.c
 OBJS    = $(SRCS:.c=.o)
 
 .PHONY: all clean run

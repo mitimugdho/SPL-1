@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
 #define GREEN   "\033[0;32m"
 #define RESET   "\033[0m"
+
 Event events[MAX_EVENTS];
 int event_count = 0;
 
@@ -20,7 +22,6 @@ int add_event(GregorianDate g_date, BengaliDate b_date, const char* description)
         printf("Error: Maximum event limit reached!\n");
         return 0;
     }
-    
     events[event_count].g_date = g_date;
     events[event_count].b_date = b_date;
     strncpy(events[event_count].description, description, MAX_EVENT_TEXT - 1);
@@ -31,7 +32,6 @@ int add_event(GregorianDate g_date, BengaliDate b_date, const char* description)
     event_count++;
     return 1;
 }
-
 void view_events_by_date(GregorianDate g_date) {
     int found = 0;
     long target_jdn = gregorian_to_jdn(g_date);
@@ -62,13 +62,10 @@ void view_all_events() {
         printf("\nNo events stored.\n");
         return;
     }
-    
     GregorianDate today = get_today_date();
     long today_jdn = gregorian_to_jdn(today);
-    
     printf("\n"GREEN"*** All Upcoming Events ***"RESET"\n");
     int found = 0;
-    
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active) {
             long event_jdn = gregorian_to_jdn(events[i].g_date);
@@ -77,8 +74,15 @@ void view_all_events() {
                 print_gregorian_date(events[i].g_date);
                 printf(" (");
                 print_bengali_date(events[i].b_date);
+                char* string;
+                if(events[i].is_done) {
+                    string = "DONE";
+                }
+                else{
+                    string = "PENDING";
+                }
                 printf(")\n   %s [%s]\n", events[i].description,
-                       events[i].is_done ? "DONE" : "PENDING");  
+                       string);  
                 found++;
             }
         }
@@ -96,7 +100,7 @@ void view_pending_events() {
     GregorianDate today = get_today_date();
     long today_jdn = gregorian_to_jdn(today);
 
-    printf("\n"GREEN"*** Pending Events (Overdue + Upcoming) ***"RESET"s\n");
+    printf("\n"GREEN"*** Pending Events (Overdue + Upcoming) ***"RESET"\n");
     int found = 0;
 
     for (int i = 0; i < event_count; i++) {
@@ -116,95 +120,24 @@ void view_pending_events() {
         printf("No pending events.\n");
     }
 }
-
 void view_today_events() {
     GregorianDate today = get_today_date();
     long today_jdn = gregorian_to_jdn(today);
     
     printf("\n"GREEN"=== TODAY'S REMINDERS ==="RESET"\n");
-    printf("Date: ");
-    print_gregorian_date(today);
-    BengaliDate b_today = gregorian_to_bengali(today);
-    printf(" (");
-    print_bengali_date(b_today);
-    printf(")\n");
-    
     int found = 0;
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active) {
             long event_jdn = gregorian_to_jdn(events[i].g_date);
             if (event_jdn == today_jdn) {
-                printf("\n***%s***\n", events[i].description);
+                printf("  • %s\n", events[i].description);
                 found++;
             }
         }
     }
-    
     if (found == 0) {
         printf("\nNo reminders for today.\n");
     }
-}
-int save_events_to_file(const char* filename) {
-    FILE* file = fopen(filename, "w");
-    if (file == NULL) {
-        printf("Error: Cannot open file for writing.\n");
-        return 0;
-    }
-    
-    fprintf(file, "%d\n", event_count);
-    
-    for (int i = 0; i < event_count; i++) {
-        if (events[i].is_active) {
-            fprintf(file, "%d %d %d %d %d %d %s\n",
-                    events[i].g_date.day, events[i].g_date.month, events[i].g_date.year,
-                    events[i].b_date.day, events[i].b_date.month, events[i].b_date.year,
-                    events[i].description);
-        }
-    }
-    fclose(file);
-    return 1;
-}
-int load_events_from_file(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        return 0;  
-    }
-    int count;
-    fscanf(file, "%d\n", &count);
-    init_events();
-    
-    for (int i = 0; i < count; i++) {
-        GregorianDate g_date;
-        BengaliDate b_date;
-        char description[MAX_EVENT_TEXT];
-        int is_done = 0;
-
-       if (fscanf(file, "%d %d %d %d %d %d ",
-            &g_date.day, &g_date.month, &g_date.year,
-            &b_date.day, &b_date.month, &b_date.year) == 6) {
-            char rest[MAX_EVENT_TEXT];
-            fgets(rest, MAX_EVENT_TEXT, file);
-            rest[strcspn(rest, "\n")] = 0;
-            int done_flag = 0;
-            char desc_part[MAX_EVENT_TEXT];
-            if (sscanf(rest, "%d %[^\n]", &done_flag, desc_part) == 2) {
-                is_done = done_flag;
-                strncpy(description, desc_part, MAX_EVENT_TEXT - 1);
-                description[MAX_EVENT_TEXT - 1] = '\0';
-            } else {
-                is_done = 0;
-                strncpy(description, rest, MAX_EVENT_TEXT - 1);
-                description[MAX_EVENT_TEXT - 1] = '\0';
-            }
-
-            add_event(g_date, b_date, description);
-            events[event_count - 1].is_done = is_done;
-
-        }
-    }
-    
-    fclose(file);
-    return 1;
 }
 GregorianDate get_today_date() {
     GregorianDate today;
@@ -218,13 +151,13 @@ GregorianDate get_today_date() {
     return today;
 }
 void mark_event_done(int event_index) {
-    if (event_index < 0 || event_index >= event_count || !events[event_index].is_active) {
+    if (event_index < 0 || event_index >= event_count ||
+        !events[event_index].is_active) {
         printf("Error: Invalid event number.\n");
         return;
     }
     events[event_index].is_done = 1;
     printf("\nEvent marked as DONE: %s\n", events[event_index].description);
-    save_events_to_file("calendar_events.txt");
 }
 void reschedule_event(int event_index, GregorianDate new_date) {
     if (event_index < 0 || event_index >= event_count || !events[event_index].is_active) {
@@ -238,6 +171,5 @@ void reschedule_event(int event_index, GregorianDate new_date) {
     print_gregorian_date(new_date);
     printf(" (");
     print_bengali_date(events[event_index].b_date);
-    printf(")\n");
-    save_events_to_file("calendar_events.txt");
+    printf(")\n");   
 }

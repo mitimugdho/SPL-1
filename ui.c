@@ -65,9 +65,7 @@ void display_monthly_calendar(int month, int year) {
     
     printf(" └────────┴────────┴────────┴────────┴────────┴────────┴────────┘\n");
 }
-
 void display_dual_date(GregorianDate g_date) {
-    printf("                    DUAL DATE DISPLAY                       \n");
     BengaliDate b_date = gregorian_to_bengali(g_date);
     
     printf("English (Gregorian): ");
@@ -76,7 +74,7 @@ void display_dual_date(GregorianDate g_date) {
     
     printf("Bengali (Bangla):    ");
     print_bengali_date(b_date);
-    printf("\n");
+    printf("(%s)\n",get_bengali_day_name(get_day_of_week(g_date)));
     
     long target_jdn = gregorian_to_jdn(g_date);
     int event_found = 0;
@@ -93,7 +91,6 @@ void display_dual_date(GregorianDate g_date) {
             }
         }
     }
-    
     if (!event_found) {
         printf("\nNo events scheduled for this date.\n");
     }

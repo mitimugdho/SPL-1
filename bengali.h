@@ -12,6 +12,8 @@ typedef struct {
     int month;  
     int year;
 } BengaliDate;
+
+const char* get_bengali_day_number(int dow);
 void init_bengali_calendar();
 int is_bengali_leap_year(int year);
 int get_bengali_days_in_month(int month, int year);
@@ -19,6 +21,5 @@ int is_valid_bengali_date(BengaliDate date);
 void print_bengali_date(BengaliDate date);
 const char* get_bengali_month_name(int month);
 const char* get_bengali_day_short(int dow);
-const char* get_bengali_day_unicode(int dow);
-const char* get_bengali_day_number(int dow);
+const char* get_bengali_day_name(int dow);
 #endif 

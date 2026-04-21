@@ -18,16 +18,14 @@ typedef struct {
 extern Event events[MAX_EVENTS];
 extern int event_count;
 
-void init_events();
+void init_events(void);
 int add_event(GregorianDate g_date, BengaliDate b_date, const char* description);
 void view_events_by_date(GregorianDate g_date);
 void view_all_events();
 void view_pending_events();
 void view_today_events();
-int save_events_to_file(const char* filename);
-int load_events_from_file(const char* filename);
-void reschedule_event(int event_index, GregorianDate new_date);
 void mark_event_done(int event_index);
+void reschedule_event(int event_index, GregorianDate new_date);
 GregorianDate get_today_date();
 
 #endif

@@ -7,7 +7,6 @@ long gregorian_to_jdn(GregorianDate date) {
     long jdn = date.day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
     return jdn;
 }
-
 GregorianDate jdn_to_gregorian(long jdn) {
     GregorianDate date;    
     long a = jdn + 32044;

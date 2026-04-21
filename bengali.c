@@ -5,6 +5,9 @@ const char* BENGALI_MONTHS[] = {
     "বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন",
     "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"
 };
+const int BENGALI_DAYS_IN_MONTH[] = {
+    0, 31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 29, 30
+};
 const char* BENGALI_DAY_NAMES_UNICODE[] = {
     "রবিবার",    
     "সোমবার",
@@ -30,11 +33,15 @@ const char* BENGALI_DAY_NUMBER[] = {
     "১০",
     "১১",
     "১২",
-    "১৩","১৪","১৫","১৬","১৭","১৮","১৯","২০","২১","২২","২৩","২৪","২৫","২৬","২৭","২৮","২৯","৩০","৩১"
+    "১৩",
+    "১৪","১৫","১৬","১৭","১৮","১৯","২০","২১","২২","২৩","২৪","২৫","২৬","২৭","২৮","২৯","৩০","৩১"
 };
-const int BENGALI_DAYS_IN_MONTH[] = {
-    0, 31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 29, 30
-};
+const char* get_bengali_day_number(int bengali_day){
+    if(bengali_day< 1 || bengali_day > 31){
+        return "Invalid bengali date";
+    }
+    return BENGALI_DAY_NUMBER[bengali_day-1];
+}
 void init_bengali_calendar() {    
 }
 int is_bengali_leap_year(int year) {
@@ -60,8 +67,8 @@ int get_bengali_days_in_month(int month, int year) {
 int is_valid_bengali_date(BengaliDate date) {
     if (date.year < 1 || date.month < 1 || date.month > 12 || date.day < 1)
         return 0;
-    
     int max_days = get_bengali_days_in_month(date.month, date.year);
+    if(date.day>max_days) return 0;
     return date.day <= max_days;
 }
 void print_bengali_date(BengaliDate date) {
@@ -75,25 +82,13 @@ const char* get_bengali_month_name(int month) {
     }
     return BENGALI_MONTHS[month];
 }
-
 const char* get_bengali_day_short(int dow) {
     if (dow < 0 || dow > 6)
         return "Invalid";
     return BENGALI_DAY_SHORT[dow];
 }
-const char* get_bengali_day_unicode(int dow) {
-    if (dow < 0 || dow > 6)
-        return "Invalid";
-    return BENGALI_DAY_NAMES_UNICODE[dow];
-}
 const char* get_bengali_day_name(int dow) {
     if (dow < 0 || dow > 6)
         return "Invalid";
     return BENGALI_DAY_NAMES_UNICODE[dow];
-}
-const char* get_bengali_day_number(int bengali_day){
-    if(bengali_day< 1 || bengali_day > 31){
-        return "Invalid bengali date";
-    }
-    return BENGALI_DAY_NUMBER[bengali_day-1];
 }

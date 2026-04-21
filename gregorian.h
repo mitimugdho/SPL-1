@@ -1,6 +1,8 @@
 #ifndef GREGORIAN_H
 #define GREGORIAN_H
 
+extern const char* GREGORIAN_MONTHS[];
+extern const char* DAY_NAMES[];
 typedef struct {
     int day;
     int month;
@@ -14,7 +16,7 @@ void print_gregorian_date(GregorianDate date);
 const char* get_gregorian_month_name(int month);
 const char* get_day_of_week_name(int dow);
 int get_day_of_week(GregorianDate date);
-const char* get_bengali_day_name(int dow);
+const char* get_bengali_day_name(int dow); //dot
 void print_dual_day_names(int dow);
 
 #endif

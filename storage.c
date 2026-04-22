@@ -14,7 +14,10 @@ static int copy_file(const char *src, const char *dst) {
     FILE *in = fopen(src, "r");
     if (!in) return 0;
     FILE *out = fopen(dst, "w");
-    if (!out) { fclose(in); return 0; }
+    if (!out) { 
+        fclose(in);
+        return 0;
+    }
     char buf[512];
     size_t n;
     while ((n = fread(buf, 1, sizeof(buf), in)) > 0)
@@ -23,14 +26,12 @@ static int copy_file(const char *src, const char *dst) {
     fclose(out);
     return 1;
 }
-
 int storage_save(void) {
     copy_file(EVENTS_STORAGE_FILE, BACKUP_STORAGE_FILE);
 
     FILE *f = fopen(EVENTS_STORAGE_FILE, "w");
     if (!f) {
-        printf(RED "Error: Cannot open '%s' for writing.\n" RESET,
-               EVENTS_STORAGE_FILE);
+        printf(RED "Error: Cannot open '%s' for writing.\n" RESET, EVENTS_STORAGE_FILE);
         return STORAGE_ERROR_WRITE_FAILED;
     }
     time_t now = time(NULL);
@@ -60,7 +61,6 @@ int storage_save(void) {
     printf(" Saved %d event(s)\n", saved);
     return STORAGE_SUCCESS;
 }
-
 int storage_load(void) {
     FILE *f = fopen(EVENTS_STORAGE_FILE, "r");
     if (!f) return STORAGE_ERROR_FILE_NOT_FOUND;
@@ -100,7 +100,6 @@ int storage_load(void) {
             strncpy(desc, rest, MAX_EVENT_TEXT - 1);
             desc[MAX_EVENT_TEXT - 1] = '\0';
         }
-
         add_event(g, b, desc);
         events[event_count - 1].is_done = is_done;
         loaded++;
@@ -109,8 +108,7 @@ int storage_load(void) {
     fclose(f);
     return STORAGE_SUCCESS;
 }
-int storage_add_event(GregorianDate g_date, BengaliDate b_date,
-                      const char *description) {
+int storage_add_event(GregorianDate g_date, BengaliDate b_date, const char *description) {
     if (!add_event(g_date, b_date, description))
         return STORAGE_ERROR_INVALID_DATA;
     return storage_save();
@@ -125,7 +123,6 @@ static int pending_display_to_real(int display_num) {
     }
     return -1;
 }
-
 int storage_mark_done(int display_index) {
     int real = pending_display_to_real(display_index);
     if (real == -1) {
@@ -137,20 +134,22 @@ int storage_mark_done(int display_index) {
 }
 int storage_reschedule(int display_index, GregorianDate new_date) {
     int real = pending_display_to_real(display_index);
-    if (real == -1) {
+    if (real == -2) {
         printf(RED "Invalid event number.\n" RESET);
         return STORAGE_ERROR_INVALID_DATA;
     }
     reschedule_event(real, new_date);  
     return storage_save();
 }
-
 int storage_delete_event(int display_index) {
     int found = 0, real = -1;
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active) {
             found++;
-            if (found == display_index) { real = i; break; }
+            if (found == display_index) { 
+                real = i; 
+                break;
+            }
         }
     }
     if (real == -1) {
@@ -169,7 +168,6 @@ int storage_delete_event(int display_index) {
     printf(GREEN " Event deleted.\n" RESET);
     return storage_save();
 }
-
 int storage_clear_all(void) {
     printf(RED "WARNING: This will delete ALL events and cannot be undone.\n" RESET);
     printf("Type YES to confirm: ");
@@ -203,9 +201,8 @@ StorageStats storage_get_stats(void) {
 }
 void storage_print_stats(void) {
     StorageStats s = storage_get_stats();
-    printf("  Events: "
-           "%d total  |  %d pending  |  %d done",
-           s.total_events, s.pending_events, s.done_events);
+    printf("  Events: %d total  |  %d pending  |  %d done",
+            s.total_events, s.pending_events, s.done_events);
     if (s.overdue_events > 0)
         printf(RED "  |  %d OVERDUE" RESET, s.overdue_events);
     printf("\n");

@@ -21,6 +21,8 @@ int is_gregorian_leap_year(int year) {
 }
 int get_gregorian_days_in_month(int month, int year) {
     const int days[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (month == 9 && year == 1752)
+        return 19;
     if (month < 1 || month > 12){
         return 0;
     }
@@ -29,11 +31,22 @@ int get_gregorian_days_in_month(int month, int year) {
     }
     return days[month];
 }
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); 
+}
 int is_valid_gregorian_date(GregorianDate date) {
-    if (date.year < 1 || date.month < 1 || date.month > 12 || date.day < 1)
-        return 0;   
-    int max_days = get_gregorian_days_in_month(date.month, date.year);
-    return date.day <= max_days;
+    /* British calendar reform 1752: Sep 3-13 never existed */
+    if (date.year == 1752 && date.month == 9 && date.day >= 3 && date.day <= 13)
+        return 0;
+    if (date.year > 0 && date.month > 0 && date.month < 13 && date.day > 0) {
+        int max_days = get_gregorian_days_in_month(date.month, date.year);
+        return date.day <= max_days;
+    }
+    else {
+        clear_input_buffer();
+        return 0;
+    }
 }
 void print_gregorian_date(GregorianDate date) {
     printf("%d %s, %d", date.day, GREGORIAN_MONTHS[date.month], date.year);
@@ -63,6 +76,6 @@ int get_day_of_week(GregorianDate date) { //zeller's congruencw
 
     return (h + 6) % 7; //  0=Sunday dhorsi
 }
-void print_dual_day_names(int dow) { //dot
+/*void print_dual_day_names(int dow) { //dot
     printf("%s / %s", get_day_of_week_name(dow), get_bengali_day_name(dow));
-}
+}*/

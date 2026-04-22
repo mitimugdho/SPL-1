@@ -12,10 +12,11 @@
 #define EVENTS_FILE "calendar_events.txt" 
 #define CYAN    "\033[1;36m"
 #define GREEN   "\033[0;32m"
+#define RED     "\033[31m"
 #define RESET   "\033[0m"
 
 void print_menu() {
-    printf("                        "CYAN"MAIN MENU"RESET"                              \n");
+    printf("                      "CYAN"MAIN MENU"RESET"                              \n");
     printf("  1. English to Bengali Date Conversion (E→B)\n");
     printf("  2. Bengali to English Date Conversion (B→E)\n");
     printf("  3. Add Event/Task\n");
@@ -23,9 +24,9 @@ void print_menu() {
     printf("  5. View All Upcoming Events\n");
     printf("  6. Display Monthly Calendar (Dual)\n");
     printf("  7. Mark Event as Done\n");      
-    printf("  8. Reschedule Event\n");  
+    printf("  8. View & Reschedule Pending Event\n");  
     printf("  9. Delete Event\n");  
-    printf("  10. Calorie intake\n");    
+    printf("  10. Journal Entry\n");    
     printf("  11. Exit \n");
     printf("Enter your choice: ");
 }
@@ -47,10 +48,11 @@ void handle_gregorian_to_bengali() {
     scanf("%d", &g_date.year);
     
     if (!is_valid_gregorian_date(g_date)) {
-        printf("Invalid Gregorian date!\n");
+        printf(RED"Invalid Gregorian date!\n"RESET);
         return;
     }
     printf("              "GREEN"ENGLISH TO BENGALI CONVERSION"RESET"               \n");
+    display_dual_date(g_date);
 }
 void handle_bengali_to_gregorian() {
     BengaliDate b_date;
@@ -63,7 +65,7 @@ void handle_bengali_to_gregorian() {
     scanf("%d", &b_date.year);
     
     if (!is_valid_bengali_date(b_date)) {
-        printf("Invalid Bengali date!\n");
+        printf(RED"Invalid Bengali date!\n"RESET);
         return;
     }
     
@@ -79,8 +81,8 @@ void handle_add_event() {
     GregorianDate g_date;
     char description[MAX_EVENT_TEXT];
     
-    printf("\n"GREEN"--- Add Event/Reminder ---"RESET"\n");
-    printf("Enter date for event:\n");
+    printf("\n"GREEN"--- Add Event/Task ---"RESET"\n");
+    printf("Enter date:\n");
     printf("Day: ");
     scanf("%d", &g_date.day);
     printf("Month (1-12): ");
@@ -89,7 +91,7 @@ void handle_add_event() {
     scanf("%d", &g_date.year);
     
     if (!is_valid_gregorian_date(g_date)) {
-        printf("Invalid date!\n");
+        printf(RED"Invalid date!\n"RESET);
         return;
     }
     
@@ -118,11 +120,28 @@ void handle_view_events_by_date() {
     scanf("%d", &g_date.year);
     
     if (!is_valid_gregorian_date(g_date)) {
-        printf("Invalid date!\n");
+        printf(RED"Invalid date!\n"RESET);
         return;
     }
     
     view_events_by_date(g_date);
+}
+void handle_monthly_calendar() {
+    int month, year;
+    printf("\n   Display Monthly Calendar\n");
+    printf("Enter month (1-12): ");
+    scanf("%d", &month);
+    printf("Enter year: ");
+    scanf("%d", &year);
+
+    if(month >0 && month <13 && year > 0){
+        display_monthly_calendar(month,year);
+    }
+    else{
+        printf(RED"Invalid month or year!\n"RESET);
+        clear_input_buffer();
+        return;
+    }
 }
 void handle_mark_done() {
     if (event_count == 0) {
@@ -132,8 +151,16 @@ void handle_mark_done() {
     view_pending_events();
     printf("\nEnter event number to mark as done: ");
     int num;
-    scanf("%d", &num);
-    storage_mark_done(num);
+    if (scanf("%d", &num) != 1) {        
+        printf(RED"Invalid input!\n"RESET);
+        clear_input_buffer();
+        return;
+    }
+    if (num > 0 && num <= event_count) {  
+        storage_mark_done(num);
+    } else {
+        printf(RED"Invalid event number!\n"RESET);
+    }
 }
 void handle_reschedule() {
     if (event_count == 0) {
@@ -141,10 +168,14 @@ void handle_reschedule() {
         return;
     }
     view_pending_events();
-    printf("\nEnter event number to reschedule: ");
+    printf("\nEvent number to reschedule(0 to cancel): ");
     int num;
     scanf("%d", &num);
-    int real_index = -1;
+    if(num == 0){
+        printf("Rescheduling cancelled.\n");
+        return;
+    }
+    int real_index = -1; 
     int found = 0;
     for (int i = 0; i < event_count; i++) {
         if (events[i].is_active && !events[i].is_done) {
@@ -181,35 +212,36 @@ void handle_delete_event() {
     int num; scanf("%d", &num);
     storage_delete_event(num);
 }
-void handle_monthly_calendar() {
-    int month, year;
-    printf("\n   Display Monthly Calendar\n");
-    printf("Enter month (1-12): ");
-    scanf("%d", &month);
-    printf("Enter year: ");
-    scanf("%d", &year);
-    
-    if (month < 1 || month > 12) {
-        printf("Invalid month!\n");
-        return;
-    }
-    display_monthly_calendar(month,year);
-}
+
 void handle_add_journal_entry() {
-    printf("\n" GREEN "--- Add Journal Entry ---" RESET "\n");
+    printf("\n" GREEN "--- Calories Consumed ---" RESET "\n");
     GregorianDate date;
     printf("Log for today? (1=Yes / 0=Enter date): ");
-    int use_today; scanf("%d", &use_today);
+    int use_today; 
+    scanf("%d", &use_today);
     if (use_today) {
         date = get_today_date();
-    } else {
+    } 
+    else {
         printf("Day: ");   scanf("%d", &date.day);
         printf("Month: "); scanf("%d", &date.month);
         printf("Year: ");  scanf("%d", &date.year);
-        if (!is_valid_gregorian_date(date)) { printf("Invalid date!\n"); return; }
+        if (!is_valid_gregorian_date(date)) { 
+            printf("Invalid date!\n"); 
+            return;
+        }
     }
     int calories;
-    printf("Calories consumed today: "); scanf("%d", &calories);
+    printf("Calories consumed today?(kcal/day): "); 
+    if (scanf("%d", &calories) != 1) {
+        printf(RED "Invalid input! Calories must be a number.\n" RESET);
+        clear_input_buffer();
+        return;
+    }
+    if (calories < 0) {
+        printf(RED "Calories cannot be negative!\n" RESET);
+        return;
+    }
     char note[JOURNAL_NOTE_LEN];
     printf("Optional note (Enter to skip): ");
     getchar();
@@ -251,7 +283,7 @@ void handle_set_calorie_goal() {
 }
 int main() {
     int choice;
-    char q;
+    char q='a';
     init_events();  // initialize the array
 
     int loaded = storage_load();
@@ -294,30 +326,36 @@ int main() {
                 else printf("Invalid input.");
                 break;
             case 10:
-                printf("a. Add journal entry\n");
-                printf("b. View Today's Journal\n");
-                printf("c. View All Journal Entries\n");
-                printf("d. Weekly Calorie Summary\n");
-                printf("e. Edit Journal Entry\n");
-                printf("f. Delete Journal Entry\n");
-                printf("g. Set Calorie Goal\n");
-                printf("Enter journal choice:");
-                scanf(" %c",&q);
-                switch(q){
-                    case 'a': handle_add_journal_entry();
-                        break;
-                    case 'b': journal_view_today();           
-                        break;
-                    case 'c': journal_view_all();             
-                        break;
-                    case 'd': journal_view_weekly_summary();  
-                        break;
-                    case 'e': handle_edit_journal_entry();    
-                        break;
-                    case 'f': handle_delete_journal_entry();  
-                        break;
-                    case 'g': handle_set_calorie_goal();      
-                        break;
+                while(q!='h'){
+                    printf("a. Add journal entry\n");
+                    printf("b. View Today's Journal\n");
+                    printf("c. View All Journal Entries\n");
+                    printf("d. Weekly Calorie Summary\n");
+                    printf("e. Edit Journal Entry\n");
+                    printf("f. Delete Journal Entry\n");
+                    printf("g. Set Calorie Goal\n");
+                    printf("h. Exit to main menu:\n");
+                    printf("Enter journal choice:");
+                    scanf(" %c",&q);
+                    switch(q){
+                        case 'a': handle_add_journal_entry();
+                            break;
+                        case 'b': journal_view_today();           
+                            break;
+                        case 'c': journal_view_all();             
+                            break;
+                        case 'd': journal_view_weekly_summary();  
+                            break;
+                        case 'e': handle_edit_journal_entry();    
+                            break;
+                        case 'f': handle_delete_journal_entry();  
+                            break;
+                        case 'g': handle_set_calorie_goal();      
+                            break;
+                        case 'h': printf("Returning to main menu...\n");
+                            break;
+                        default: printf(RED"Invalid choice! Please enter a-h.\n" RESET);
+                    }
                 }
                 break;
             case 11:

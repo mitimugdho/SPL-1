@@ -139,17 +139,6 @@ void view_today_events() {
         printf("\nNo reminders for today.\n");
     }
 }
-GregorianDate get_today_date() {
-    GregorianDate today;
-    time_t t = time(NULL);
-    struct tm* tm_info = localtime(&t);
-    
-    today.day = tm_info->tm_mday;
-    today.month = tm_info->tm_mon + 1;
-    today.year = tm_info->tm_year + 1900;
-    
-    return today;
-}
 void mark_event_done(int event_index) {
     if (event_index < 0 || event_index >= event_count ||
         !events[event_index].is_active) {
@@ -164,6 +153,10 @@ void reschedule_event(int event_index, GregorianDate new_date) {
         printf("Error: Invalid event number.\n");
         return;
     }
+    else if(event_index == -1){
+        printf("Rescheduling cancelled.\n");
+        return;
+    }
     events[event_index].g_date = new_date;
     events[event_index].b_date = gregorian_to_bengali(new_date);
     events[event_index].is_done = 0;  // reset to pending on reschedule
@@ -172,4 +165,15 @@ void reschedule_event(int event_index, GregorianDate new_date) {
     printf(" (");
     print_bengali_date(events[event_index].b_date);
     printf(")\n");   
+}
+GregorianDate get_today_date() {
+    GregorianDate today;
+    time_t t = time(NULL);
+    struct tm* tm_info = localtime(&t);
+    
+    today.day = tm_info->tm_mday;
+    today.month = tm_info->tm_mon + 1;
+    today.year = tm_info->tm_year + 1900;
+    
+    return today;
 }

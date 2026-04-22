@@ -23,8 +23,8 @@ typedef struct {
 } JournalEntry;
 
 extern JournalEntry journal[MAX_JOURNAL_ENTRIES];
-extern int          journal_count;
-extern int          calorie_goal;
+extern int journal_count;
+extern int calorie_goal;
 
 void journal_init(void);
 int  journal_add(GregorianDate date, int calories, const char *note);
@@ -35,7 +35,7 @@ void journal_view_all(void);
 void journal_view_weekly_summary(void);
 int  journal_save(void);
 int  journal_load(void);
-void journal_print_stats(void);
+//void journal_print_stats(void);
 int  journal_find_by_date(GregorianDate date);
 int  journal_dates_equal(GregorianDate a, GregorianDate b);
 

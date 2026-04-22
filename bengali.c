@@ -65,12 +65,17 @@ int get_bengali_days_in_month(int month, int year) {
     return BENGALI_DAYS_IN_MONTH[month];
 }
 int is_valid_bengali_date(BengaliDate date) {
-    if (date.year < 1 || date.month < 1 || date.month > 12 || date.day < 1)
+    if (date.year > 0 && date.month > 0 && date.month < 13 && date.day > 0) {
+        int max_days = get_bengali_days_in_month(date.month, date.year);
+        return date.day <= max_days;
+    }
+    else {
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF); 
         return 0;
-    int max_days = get_bengali_days_in_month(date.month, date.year);
-    if(date.day>max_days) return 0;
-    return date.day <= max_days;
+    }
 }
+
 void print_bengali_date(BengaliDate date) {
     printf("%s %s, %d ", get_bengali_day_number(date.day), BENGALI_MONTHS[date.month], date.year);
 }

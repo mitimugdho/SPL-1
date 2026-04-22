@@ -1,15 +1,20 @@
 #include "jdn.h"
 
+#define BRITISH_REFORM_JDN 2361222  // gregorian Sep 14, 1752 
+
 long gregorian_to_jdn(GregorianDate date) {
     int a = (14 - date.month) / 12;
     int y = date.year + 4800 - a;
     int m = date.month + 12 * a - 3;
     long jdn = date.day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+    if (jdn < BRITISH_REFORM_JDN)
+        jdn -= 11;
     return jdn;
 }
 GregorianDate jdn_to_gregorian(long jdn) {
     GregorianDate date;    
-    long a = jdn + 32044;
+    long proleptic_jdn = (jdn < BRITISH_REFORM_JDN - 11) ? jdn + 11 : jdn;
+    long a = proleptic_jdn + 32044;
     long b = (4 * a + 3) / 146097;
     long c = a - (146097 * b) / 4;
     long d = (4 * c + 3) / 1461;

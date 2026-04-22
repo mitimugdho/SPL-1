@@ -283,10 +283,12 @@ void handle_set_calorie_goal() {
 }
 int main() {
     int choice;
-    char q='a';
+    char q;
     init_events();  // initialize the array
 
     int loaded = storage_load();
+    journal_init();
+    journal_load();
     handle_current_calender();
     if (loaded == STORAGE_SUCCESS)
         storage_print_stats();
@@ -326,6 +328,7 @@ int main() {
                 else printf("Invalid input.");
                 break;
             case 10:
+                q = 'a';
                 while(q!='h'){
                     printf("a. Add journal entry\n");
                     printf("b. View Today's Journal\n");
@@ -359,6 +362,7 @@ int main() {
                 }
                 break;
             case 11:
+                storage_save();
                 journal_save();
                 printf("\n Events and journal saved. Goodbye!\n\n");
                 return 0;

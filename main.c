@@ -187,7 +187,7 @@ void handle_reschedule() {
         }
     }
     if (real_index == -1) {
-        printf("Invalid event number.\n");
+        printf(RED"Invalid event number.\n"RESET);
         return;
     }
     GregorianDate new_date;
@@ -200,13 +200,16 @@ void handle_reschedule() {
     scanf("%d", &new_date.year);
 
     if (!is_valid_gregorian_date(new_date)) {
-        printf("Invalid date!\n");
+        printf(RED"Invalid date!\n"RESET);
         return;
     }
     storage_reschedule(num, new_date);
 }
 void handle_delete_event() {
-    if (event_count == 0) { printf("\nNo events to delete.\n"); return; }
+    if (event_count == 0) { 
+        printf("\nNo events to delete.\n");
+         return;
+        }
     view_all_events();
     printf("\nEnter event number to delete: ");
     int num; scanf("%d", &num);
@@ -330,6 +333,7 @@ int main() {
             case 10:
                 q = 'a';
                 while(q!='h'){
+                    printf("       "CYAN"JOUNAL MENU"RESET"      \n");
                     printf("a. Add journal entry\n");
                     printf("b. View Today's Journal\n");
                     printf("c. View All Journal Entries\n");

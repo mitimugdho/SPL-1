@@ -159,7 +159,7 @@ void reschedule_event(int event_index, GregorianDate new_date) {
     }
     events[event_index].g_date = new_date;
     events[event_index].b_date = gregorian_to_bengali(new_date);
-    events[event_index].is_done = 0;  // reset to pending on reschedule
+    events[event_index].is_done = 0;  // reseting to pending on reschedule
     printf("\nEvent rescheduled: %s\nNew date: ", events[event_index].description);
     print_gregorian_date(new_date);
     printf(" (");
